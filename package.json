@@ -1,0 +1,13 @@
+{
+  "name": "crypto-signal-server",
+  "version": "0.1.0",
+  "description": "Peer signal server for cryptocoin",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "star-signal": "cd node_modules/libp2p-webrtc-star && npm run star-signal"
+  },
+  "dependencies": {
+    "libp2p-webrtc-star": "^0.13.3"
+  }
+}
