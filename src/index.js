@@ -113,4 +113,4 @@ watcher.on('IP:change', (oldIP, newIP) => {
 
 watcher.start();
 
-server.listen(9090, () => info('listening on 9090'));
+server.listen(4040, () => info('listening on 4040'));

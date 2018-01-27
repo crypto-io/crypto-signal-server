@@ -83,5 +83,5 @@ watcher.on('IP:change', (oldIP, newIP) => {
   if (oldIP !== newIP) announceAddress(newIP);
 });
 watcher.start();
-server.listen(9090, () => cryptoLogger.info('listening on 9090'));
+server.listen(4040, () => cryptoLogger.info('listening on 4040'));
 //# sourceMappingURL=server.js.map

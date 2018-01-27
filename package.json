@@ -1,6 +1,6 @@
 {
   "name": "crypto-signal-server",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Peer signal server for cryptocoin",
   "main": "index.js",
   "license": "MIT",
