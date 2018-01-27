@@ -1,13 +1,27 @@
 {
   "name": "crypto-signal-server",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Peer signal server for cryptocoin",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "star-signal": "cd node_modules/libp2p-webrtc-star && npm run star-signal"
+    "start": "node server.js"
+  },
+  "backed": {
+    "bundles": [
+      {
+        "src": "src/index.js",
+        "dest": "server.js",
+        "format": "cjs"
+      }
+    ]
   },
   "dependencies": {
-    "libp2p-webrtc-star": "^0.13.3"
+    "crypto-ecdh": "^0.2.2",
+    "crypto-io-fs": "^0.1.2",
+    "express": "^4.16.2",
+    "ip-monitor": "^0.1.2",
+    "js-ipfs-swarm-key-gen": "^1.0.0",
+    "socket.io": "^2.0.4"
   }
 }
