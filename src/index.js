@@ -36,6 +36,7 @@ class SecureConnection {
     this.socket = socket;
     // bind methods
     this.handshake = this.handshake.bind(this);
+    this.keyRequest = this.keyRequest.bind(this);
     // init listeners & emitters
     this.shake();
   }
