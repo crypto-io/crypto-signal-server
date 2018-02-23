@@ -1,6 +1,5 @@
 import {createWatcher} from 'ip-monitor';
 import { Server } from 'http';
-import express from 'express';
 import _io from 'socket.io';
 import ecdh from 'crypto-ecdh';
 import swarmKey from 'js-ipfs-swarm-key-gen';
@@ -9,8 +8,7 @@ import { join } from 'path';
 import { homedir } from 'os';
 import { info } from 'crypto-logger';
 
-const app = express();
-const server = Server(app);
+const server = Server();
 const io = _io(server);
 const store = {};
 const bootstrap = new Map();
@@ -20,7 +18,7 @@ swarmKey().then(() => info('key Initialized: ready for connections'));
 /**
  * Main peernet address
  * @param {string} ip The ip for the running daemon
- * @return {string} The address as a MultiAddress /ip4/ip/protocol/port/ipfs/peerID
+ * @return {string} The address as a MultiAddress /protocolversion/ip/protocol/port/ipfs/peerID
  */
 const address = ip => `/ip4/${ip}/tcp/80/ipfs/QmPgX72kLV9Gopq77tMFAQfMZWBGp6Va3AFcmJyeQawTCm`;
 
@@ -52,33 +50,33 @@ class SecureConnection {
     this.socket.on('request-key', this.keyRequest);
   }
 
-  handshake(key) {
-    (async () => {
-      try {
-        this.pair.derive(key);
-        // prepare the new keys
-        const pair = ecdh('hex');
-        const cipher = await this.pair.encrypt(pair.public);
-        this.socket.on('_secure-connection', async cipher => {
-          try {
-            const key = await this.pair.decrypt(cipher);
-            this.pair = pair;
-            this.pair.derive(key);
-            const encrypted = await this.pair.encrypt(address(store.ip));
-            this.socket.emit('network', encrypted.toString());
-            this.socket.on('address', data => console.log(data));
-          } catch (e) {
-            console.error(e);
-          } finally {
-
-          }
-        })
-        // send our encrypted key to the client
-        this.socket.emit('secure-connection', cipher.toString());
-      } catch (e) {
-        console.error(e);
-      }
-    })()
+  /**
+   * @param {string} key The public key used for encypting/decrypting
+   */
+  async handshake(key) {
+    try {
+      this.pair.derive(key);
+      // prepare the new keys
+      const pair = ecdh('hex');
+      const cipher = await this.pair.encrypt(pair.public);
+      // retrieve the encrypted key
+      this.socket.on('_secure-connection', async cipher => {
+        try {
+          const key = await this.pair.decrypt(cipher);
+          this.pair = pair;
+          this.pair.derive(key);
+          const encrypted = await this.pair.encrypt(address(store.ip));
+          this.socket.emit('network', encrypted.toString());
+          this.socket.on('address', data => console.log(data));
+        } catch (e) {
+          console.error(e);
+        }
+      })
+      // send our encrypted key to the client
+      this.socket.emit('secure-connection', cipher.toString());
+    } catch (e) {
+      console.error(e);
+    }
   }
   async keyRequest() {
     const key = await read(join(homedir(), '.ipfs', 'swarm.key'), 'string');
@@ -105,12 +103,15 @@ const announceAddress = ip => {
   io.to('network', {address: address(ip)});
 }
 
+// create ip watcher
 const watcher = createWatcher();
 
+// announceAddress everytime a change is detected
 watcher.on('IP:change', (oldIP, newIP) => {
   if (oldIP !== newIP) announceAddress(newIP);
 });
 
+// start ip watcher
 watcher.start();
 
 server.listen(4040, () => info('listening on 4040'));
