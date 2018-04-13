@@ -15,12 +15,13 @@ const bootstrap = new Map();
 const connections = new Map();
 
 swarmKey().then(() => info('key Initialized: ready for connections'));
+const MULTIHASH = 'QmZKZYyoW3jXR43CpD5AAHWv8na9PZxzijBYat2wBCAgyv'
 /**
  * Main peernet address
  * @param {string} ip The ip for the running daemon
  * @return {string} The address as a MultiAddress /protocolversion/ip/protocol/port/ipfs/peerID
  */
-const address = ip => `/ip4/${ip}/tcp/80/ipfs/QmPgX72kLV9Gopq77tMFAQfMZWBGp6Va3AFcmJyeQawTCm`;
+ const address = ip => `/ip4/${ip}/tcp/80/ipfs/${MULTIHASH}`;
 
 /**
  * @important
